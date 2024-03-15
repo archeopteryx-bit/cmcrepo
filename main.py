@@ -1,5 +1,7 @@
-from dictmake import occur_dict, suited_parses
+from dictmake import main_dict_create
 
+
+occur_dict, suited_parses = main_dict_create()
 
 min_key = ''
 min_val = 10000000

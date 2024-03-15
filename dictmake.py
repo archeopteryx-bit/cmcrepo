@@ -1,5 +1,5 @@
 import pymorphy2
-from readstr import sents, complex_sents
+from readstr import main_read
 
 
 def check_stand_pos(py_parses, word_str_pos, str_pos, py_pos_list, smlr_parse):
@@ -19,7 +19,7 @@ def check_not_stand_pos(py_parses, word_str_pos, str_pos, py_ns_pos_list, smlr_p
   return
 
 
-def check_pos(word):
+def check_pos(morph, word):
   py_parse = morph.parse(word.form)
   smlr_parse = []
   check_stand_pos(py_parse, word.pos, "ADJ", ["ADJF", "ADJS", "COMP"], smlr_parse)
@@ -194,9 +194,9 @@ def add_suited_parse(suited_parses, cort_key, is_properties_same, parse):
     suited_parses[cort_key] += [parse]
 
 
-def check_word(suited_parses, word):
+def check_word(morph, suited_parses, word):
   cort_key = (word.form, word.feats)
-  parses_with_suited_pos = check_pos(word)
+  parses_with_suited_pos = check_pos(morph, word)
   feats = []
   values = []
   if word.feats != '_':
@@ -208,24 +208,29 @@ def check_word(suited_parses, word):
 
 
 
-morph = pymorphy2.MorphAnalyzer()
+def main_dict_create():
+  morph = pymorphy2.MorphAnalyzer()
+  
+  sents, complex_sents = main_read()
 
-occur_dict = dict()
+  occur_dict = dict()
 
-for n_sent in range(len(sents)):
-  for word in sents[n_sent].words:
-    word_occured(occur_dict, sents[n_sent].sent_id, word)
+  for n_sent in range(len(sents)):
+    for word in sents[n_sent].words:
+      word_occured(occur_dict, sents[n_sent].sent_id, word)
 
-for n_sent in range(len(complex_sents)):
-  for word in complex_sents[n_sent].words:
-    word_occured(occur_dict, complex_sents[n_sent].sent_id, word)
+  for n_sent in range(len(complex_sents)):
+    for word in complex_sents[n_sent].words:
+      word_occured(occur_dict, complex_sents[n_sent].sent_id, word)
 
-suited_parses = dict()
-
-for n_sent in range(len(sents)):
-  for word in sents[n_sent].words:
-    check_word(suited_parses, word)
-
-for n_sent in range(len(complex_sents)):
-  for word in complex_sents[n_sent].words:
-    check_word(suited_parses, word)
+  suited_parses = dict()
+    
+  for n_sent in range(len(sents)):
+    for word in sents[n_sent].words:
+      check_word(morph, suited_parses, word)
+        
+  for n_sent in range(len(complex_sents)):
+    for word in complex_sents[n_sent].words:
+      check_word(morph, suited_parses, word)
+    
+  return occur_dict, suited_parses

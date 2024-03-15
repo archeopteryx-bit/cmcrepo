@@ -40,41 +40,43 @@ class Sentence:
         return self.is_complex
         
         
-        
-fh = open("ru_syntagrus-ud-test.conllu",'r',encoding='utf-8')
-sents_read = 0
-sents = []
-complex_sents = []
-comments = set()
 
-sent = Sentence()
-for line in fh:
-    tok = line.strip().split('\t')
-    if not tok or line.strip() == '': # empty line, add sentence to list
-        if sent.is_not_empty:
-            sents_read += 1
-            if sent.is_complex:
-                complex_sents.append(sent)
-            else:
-                sents.append(sent)
-        sent = Sentence()
-    else:
-        if line[0] == '#' or '-' in tok[0]: # a comment line
-            line = line.strip()
-            if line[:12] == "# sent_id = ":
-                sent.set_sent_id(line[12:])
-            elif line[:9] == "# text = ":
-                sent.set_text(line[9:])
-            else:
-                comments.add(line)
+def main_read():
+    fh = open("ru_syntagrus-ud-test.conllu",'r',encoding='utf-8')
+    sents_read = 0
+    sents = []
+    complex_sents = []
+    comments = set()
 
-        else: # an actual ConllEntry, add to tokens
-            if tok[2] == "_":
-                tok[2] = tok[1].lower()
+    sent = Sentence()
+    for line in fh:
+        tok = line.strip().split('\t')
+        if not tok or line.strip() == '': # empty line, add sentence to list
+            if sent.is_not_empty:
+                sents_read += 1
+                if sent.is_complex:
+                    complex_sents.append(sent)
+                else:
+                    sents.append(sent)
+            sent = Sentence()
+        else:
+            if line[0] == '#' or '-' in tok[0]: # a comment line
+                line = line.strip()
+                if line[:12] == "# sent_id = ":
+                    sent.set_sent_id(line[12:])
+                elif line[:9] == "# text = ":
+                    sent.set_text(line[9:])
+                else:
+                    comments.add(line)
 
-            word = ConllEntry(*tok)
-            sent.add_word(word)
-            if "." in tok[0]:
-                sent.set_complex()
-fh.close()
+            else: # an actual ConllEntry, add to tokens
+                if tok[2] == "_":
+                    tok[2] = tok[1].lower()
+
+                word = ConllEntry(*tok)
+                sent.add_word(word)
+                if "." in tok[0]:
+                    sent.set_complex()
+    fh.close()
+    return sents, complex_sents
 
