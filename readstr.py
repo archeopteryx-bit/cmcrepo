@@ -41,8 +41,8 @@ class Sentence:
         
         
 
-def main_read():
-    fh = open("ru_syntagrus-ud-test.conllu",'r',encoding='utf-8')
+def main_read(file_name):
+    fh = open(file_name,'r',encoding='utf-8')
     sents_read = 0
     sents = []
     complex_sents = []

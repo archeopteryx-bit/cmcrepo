@@ -211,7 +211,7 @@ def check_word(morph, suited_parses, word):
 def main_dict_create():
   morph = pymorphy2.MorphAnalyzer()
   
-  sents, complex_sents = main_read()
+  sents, complex_sents = main_read("ru_syntagrus-ud-test.conllu")
 
   occur_dict = dict()
 
