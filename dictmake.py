@@ -19,28 +19,28 @@ def check_not_stand_pos(py_parses, word_str_pos, str_pos, py_ns_pos_list, smlr_p
   return
 
 
-def check_pos(morph, word):
-  py_parse = morph.parse(word.form)
+def check_pos(morph, cort):
+  py_parse = morph.parse(cort[0])
   smlr_parse = []
-  check_stand_pos(py_parse, word.pos, "ADJ", ["ADJF", "ADJS", "COMP"], smlr_parse)
-  check_stand_pos(py_parse, word.pos, "ADP", ["PREP"], smlr_parse)
-  check_stand_pos(py_parse, word.pos, "ADV", ["ADVB"], smlr_parse)
-  check_stand_pos(py_parse, word.pos, "AUX", ["VERB"], smlr_parse)
-  check_stand_pos(py_parse, word.pos, "CCONJ", ["CONJ"], smlr_parse)
-  check_stand_pos(py_parse, word.pos, "DET", ["NPRO"], smlr_parse)
-  check_stand_pos(py_parse, word.pos, "INTJ", ["INTJ"], smlr_parse)
-  check_stand_pos(py_parse, word.pos, "NOUN", ["NOUN"], smlr_parse)
-  check_stand_pos(py_parse, word.pos, "NUM", ["NUMR"], smlr_parse)
-  check_not_stand_pos(py_parse, word.pos, "NUM", ["NUMB"], smlr_parse)
-  check_stand_pos(py_parse, word.pos, "PART", ["PRCL"], smlr_parse)
-  check_stand_pos(py_parse, word.pos, "PRON", ["NPRO"], smlr_parse)
-  check_stand_pos(py_parse, word.pos, "PROPN", ["NOUN"], smlr_parse)
-  check_not_stand_pos(py_parse, word.pos, "PUNCT", ["PNCT"], smlr_parse)
-  check_stand_pos(py_parse, word.pos, "SCONJ", ["CONJ"], smlr_parse)
-  check_not_stand_pos(py_parse, word.pos, "SYM", ["PNCT", "UNKN"], smlr_parse)
-  check_stand_pos(py_parse, word.pos, "VERB", ["VERB", "INFN", "PRTF", "PRTS", "GRND"], smlr_parse)
-  check_stand_pos(py_parse, word.pos, "X", ["NOUN"], smlr_parse)
-  check_not_stand_pos(py_parse, word.pos, "x", ["LATN", "UNKN", "ROMN"], smlr_parse)
+  check_stand_pos(py_parse, cort[2], "ADJ", ["ADJF", "ADJS", "COMP"], smlr_parse)
+  check_stand_pos(py_parse, cort[2], "ADP", ["PREP"], smlr_parse)
+  check_stand_pos(py_parse, cort[2], "ADV", ["ADVB"], smlr_parse)
+  check_stand_pos(py_parse, cort[2], "AUX", ["VERB"], smlr_parse)
+  check_stand_pos(py_parse, cort[2], "CCONJ", ["CONJ"], smlr_parse)
+  check_stand_pos(py_parse, cort[2], "DET", ["NPRO"], smlr_parse)
+  check_stand_pos(py_parse, cort[2], "INTJ", ["INTJ"], smlr_parse)
+  check_stand_pos(py_parse, cort[2], "NOUN", ["NOUN"], smlr_parse)
+  check_stand_pos(py_parse, cort[2], "NUM", ["NUMR"], smlr_parse)
+  check_not_stand_pos(py_parse, cort[2], "NUM", ["NUMB"], smlr_parse)
+  check_stand_pos(py_parse, cort[2], "PART", ["PRCL"], smlr_parse)
+  check_stand_pos(py_parse, cort[2], "PRON", ["NPRO"], smlr_parse)
+  check_stand_pos(py_parse, cort[2], "PROPN", ["NOUN"], smlr_parse)
+  check_not_stand_pos(py_parse, cort[2], "PUNCT", ["PNCT"], smlr_parse)
+  check_stand_pos(py_parse, cort[2], "SCONJ", ["CONJ"], smlr_parse)
+  check_not_stand_pos(py_parse, cort[2], "SYM", ["PNCT", "UNKN"], smlr_parse)
+  check_stand_pos(py_parse, cort[2], "VERB", ["VERB", "INFN", "PRTF", "PRTS", "GRND"], smlr_parse)
+  check_stand_pos(py_parse, cort[2], "X", ["NOUN"], smlr_parse)
+  check_not_stand_pos(py_parse, cort[2], "x", ["LATN", "UNKN", "ROMN"], smlr_parse)
   return smlr_parse
 
 
@@ -180,7 +180,7 @@ def check_properties(parse, feats, values):
 
 
 def word_occured(occur_dict, sent_id, word):
-  cort_key = (word.form, word.feats)
+  cort_key = (word.form, word.feats, word.pos)
   if cort_key not in occur_dict:
     occur_dict[cort_key] = [(sent_id, word.id)]
   else:
@@ -194,14 +194,13 @@ def add_suited_parse(suited_parses, cort_key, is_properties_same, parse):
     suited_parses[cort_key] += [parse]
 
 
-def check_word(morph, suited_parses, word):
-  cort_key = (word.form, word.feats)
-  parses_with_suited_pos = check_pos(morph, word)
+def check_word(morph, suited_parses, cort_key):
+  parses_with_suited_pos = check_pos(morph, cort_key)
   feats = []
   values = []
-  if word.feats != '_':
-    feats = [i.split('=')[0] for i in word.feats.split('|')]
-    values = [i.split('=')[1] for i in word.feats.split('|')]
+  if cort_key[1] != '_':
+    feats = [i.split('=')[0] for i in cort_key[1].split('|')]
+    values = [i.split('=')[1] for i in cort_key[1].split('|')]
   for parse in parses_with_suited_pos:
     is_properties_same = check_properties(parse, feats, values)
     add_suited_parse(suited_parses, cort_key, is_properties_same, parse)
@@ -225,12 +224,7 @@ def main_dict_create():
 
   suited_parses = dict()
     
-  for n_sent in range(len(sents)):
-    for word in sents[n_sent].words:
-      check_word(morph, suited_parses, word)
-        
-  for n_sent in range(len(complex_sents)):
-    for word in complex_sents[n_sent].words:
-      check_word(morph, suited_parses, word)
-    
+  for cort_key in occur_dict:
+     check_word(morph, suited_parses, cort_key)
+     
   return occur_dict, suited_parses
