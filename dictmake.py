@@ -180,7 +180,7 @@ def check_properties(parse, feats, values):
 
 
 def word_occured(occur_dict, sent_id, word):
-  cort_key = (word.form, word.feats, word.pos)
+  cort_key = (word.form, word.feats, word.pos, word.lemma)
   if cort_key not in occur_dict:
     occur_dict[cort_key] = [(sent_id, word.id)]
   else:
@@ -204,6 +204,7 @@ def check_word(morph, suited_parses, cort_key):
   for parse in parses_with_suited_pos:
     is_properties_same = check_properties(parse, feats, values)
     add_suited_parse(suited_parses, cort_key, is_properties_same, parse)
+
 
 
 
