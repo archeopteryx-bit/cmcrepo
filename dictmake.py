@@ -40,7 +40,7 @@ def check_pos(morph, cort):
   check_not_stand_pos(py_parse, cort[2], "SYM", ["PNCT", "UNKN"], smlr_parse)
   check_stand_pos(py_parse, cort[2], "VERB", ["VERB", "INFN", "PRTF", "PRTS", "GRND"], smlr_parse)
   check_stand_pos(py_parse, cort[2], "X", ["NOUN"], smlr_parse)
-  check_not_stand_pos(py_parse, cort[2], "x", ["LATN", "UNKN", "ROMN"], smlr_parse)
+  check_not_stand_pos(py_parse, cort[2], "X", ["LATN", "UNKN", "ROMN"], smlr_parse)
   return smlr_parse
 
 
